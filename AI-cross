@@ -1,0 +1,75 @@
+import java.util.List;
+
+// Класс, представляющий машину
+public class Car {
+	private double x; 
+	private double y; 
+	private double speed; 
+
+	// Метод для проверки расстояния между двумя машинами
+	public static boolean isNearby(Car car1, Car car2, double thresholdDistance) {
+			double distance = Math.sqrt(Math.pow(car2.x - car1.x, 2) + Math.pow(car2.y - car1.y, 2));
+			return distance < thresholdDistance;
+	}
+
+	// Метод для снижения скорости машины
+	public void reduceSpeed(double reductionAmount) {
+			speed -= reductionAmount;
+			if (speed < 0) {
+				speed = 0;
+			}
+	}
+
+
+// Метод, который обрабатывает движение и столкновения машин
+public void handleCarMovement(List<Car> cars) {
+	double thresholdDistance = 10.0; // Пороговое расстояние, при котором машины будут считаться "рядом"
+
+	for (int i = 0; i < cars.size(); i++) {
+		Car car1 = cars.get(i);
+
+		for (int j = i + 1; j < cars.size(); j++) {
+			Car car2 = cars.get(j);
+
+			if (Car.isNearby(car1, car2, thresholdDistance)) {
+				car1.reduceSpeed(0.5); // Снижение скорости первой машины
+				car2.reduceSpeed(0.5); // Снижение скорости второй машины
+			}
+		}
+	}
+}
+
+// Метод, который обрабатывает движение и столкновения машин
+	public void handleCarMovement(List<Car> cars) {
+		double thresholdDistance = 10.0; // Пороговое расстояние, при котором машины будут считаться "рядом"
+		double avoidanceForce = 0.5; // Сила избегания столкновений
+
+		for (int i = 0; i < cars.size(); i++) {
+			Car currentCar = cars.get(i);
+
+			//Вычисление суммарной силы избегания столкновений для текущей машины
+			double avoidanceX = 0;
+			double avoidanceY = 0;
+
+			for (int j = 0; j < cars.size(); j++) {
+				if (i != j) {
+					Car otherCar = cars.get(j);
+
+					if (Car.isNearby(currentCar, otherCar, thresholdDistance)) {
+						double dx = otherCar.x - currentCar.x;
+						double dy = otherCar.y - currentCar.y;
+						double distance = Math.sqrt(dx * dx + dy * dy);
+
+						//Вычисление вектора избегания столкновений
+						avoidanceX += (dx / distance) * avoidanceForce;
+						avoidanceY += (dy / distance) * avoidanceForce;
+					}
+				}
+			}
+
+			//Изменение направления и скорости машины в соответствии с силой избегания столкновений
+			currentCar.x += currentCar.speed * avoidanceX;
+			currentCar.y += currentCar.speed * avoidanceY;
+		}
+	}
+}
